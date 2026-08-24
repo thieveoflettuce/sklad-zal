@@ -87,12 +87,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       })),
     );
     if (prev && prev.qty !== null && qty < prev.qty) {
+      const prevQty = prev.qty;
       setUsage((events) => [
         {
           id: `${Date.now()}`,
           cellId,
           name: prev.name,
-          delta: qty - prev.qty,
+          delta: qty - prevQty,
           unit: prev.unit,
           at: new Date().toISOString(),
         },

@@ -97,6 +97,12 @@ export function demandById(id: DemandId): Demand {
   return DEMANDS.find((d) => d.id === id) ?? DEMANDS[1];
 }
 
+export function filledCellIds() {
+  return INITIAL_SHELVES.flatMap((row) => row.cells)
+    .filter((cell) => cell.qty !== null)
+    .map((cell) => cell.id);
+}
+
 export function calcOrder(now: number, min: number, mult: number) {
   const target = Math.ceil(min * mult);
   return Math.max(0, target - now);
