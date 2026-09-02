@@ -50,7 +50,8 @@ export default function BalancePage() {
         </Link>
       </div>
       <p className="hint">
-        Остатки как на полке. Цвет показывает, хватает ли запас с учётом периода.
+        Остатки как на полке. Удерживай товар и перетащи в другую ячейку — на
+        телефоне зажми ~0.5 сек. Тап — открыть пересчёт.
       </p>
 
       {storageUnits.length > 1 && (
@@ -83,6 +84,7 @@ export default function BalancePage() {
       <ShelfGrid
         hrefFor={(id) => `/yacheyka?id=${id}`}
         showStatus
+        draggable
         rows={unit?.rows}
       />
       <Link className="btn btn-line" href="/sklad" style={{ marginTop: 16 }}>

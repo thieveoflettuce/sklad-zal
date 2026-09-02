@@ -294,6 +294,26 @@ input {
   color: var(--balance-critical-line);
 }
 
+.bin.is-drop-target {
+  outline: 2px dashed var(--leaf);
+  outline-offset: -2px;
+  transform: scale(1.03);
+}
+
+.bin.is-dragging {
+  opacity: 0.55;
+  cursor: grabbing;
+}
+
+.rack.is-draggable .bin:not(.is-empty) {
+  cursor: grab;
+  touch-action: none;
+}
+
+.rack.is-draggable .bin.is-empty.is-drop-target {
+  opacity: 0.85;
+}
+
 .page-head {
   display: flex;
   align-items: center;

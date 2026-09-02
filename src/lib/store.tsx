@@ -51,6 +51,7 @@ type Store = {
   assignProduct: (cellId: string, product: NewProduct) => void;
   updateProduct: (cellId: string, product: NewProduct) => void;
   clearCell: (cellId: string) => void;
+  moveProduct: (fromCellId: string, toCellId: string) => void;
 };
 
 const StoreContext = createContext<Store | null>(null);
@@ -320,6 +321,44 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     );
   }
 
+  function moveProduct(fromCellId: string, toCellId: string) {
+    if (fromCellId === toCellId) return;
+    const from = cellById(fromCellId);
+    const to = cellById(toCellId);
+    if (!from || from.qty === null) return;
+
+    const fromData = {
+      name: from.name,
+      qty: from.qty,
+      unit: from.unit,
+      min: from.min,
+    };
+    const toData =
+      to && to.qty !== null
+        ? { name: to.name, qty: to.qty, unit: to.unit, min: to.min }
+        : null;
+
+    setStorageUnits((units) =>
+      units.map((unit) => ({
+        ...unit,
+        rows: unit.rows.map((row) => ({
+          ...row,
+          cells: row.cells.map((cell) => {
+            if (cell.id === fromCellId) {
+              return toData
+                ? { ...cell, ...toData }
+                : { ...cell, name: "—", qty: null, unit: "", min: 0 };
+            }
+            if (cell.id === toCellId) {
+              return { ...cell, ...fromData };
+            }
+            return cell;
+          }),
+        })),
+      })),
+    );
+  }
+
   const value: Store = {
     storageUnits,
     activeUnitId,
@@ -342,6 +381,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     assignProduct,
     updateProduct,
     clearCell,
+    moveProduct,
   };
 
   return <StoreContext value={value}>{children}</StoreContext>;
