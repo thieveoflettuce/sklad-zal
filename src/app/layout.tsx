@@ -18,7 +18,7 @@ const ui = Onest({
 
 export const metadata: Metadata = {
   title: "SKLAD · Зал",
-  description: "Склад зала: стеллаж, инвентаризация, дозаказ и отчёты",
+  description: "Склад зала: баланс, приёмка, дозаказ и отчёты",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

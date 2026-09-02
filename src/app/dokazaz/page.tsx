@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ExportPdfButton } from "@/components/ExportPdfButton";
 import { calcOrder, calcTarget, demandById } from "@/lib/catalog";
+import { docStamp } from "@/lib/document-export";
 import { useStore } from "@/lib/store";
 
 export default function ReorderPage() {
@@ -16,6 +18,21 @@ export default function ReorderPage() {
       target: calcTarget(cell.min, demand.mult),
     }))
     .filter((line) => line.order > 0);
+
+  const exportDoc = {
+    filename: `dokazaz-zal-${new Date().toISOString().slice(0, 10)}.pdf`,
+    title: "Дозаказ · Зал",
+    subtitle: docStamp(`${demand.label} ×${demand.mult}`),
+    columns: ["Товар", "Сейчас", "Цель", "Заказать", "Ед."],
+    rows: lines.map((line) => [
+      line.name,
+      String(line.qty),
+      String(line.target),
+      `+${line.order}`,
+      line.unit,
+    ]),
+    emptyText: "Все позиции выше цели периода — заказ не нужен.",
+  };
 
   return (
     <>
@@ -51,6 +68,7 @@ export default function ReorderPage() {
         ))
       )}
       <div className="stack" style={{ marginTop: 18 }}>
+        <ExportPdfButton doc={exportDoc} />
         <Link className="btn btn-line" href="/periody">
           Сменить период
         </Link>

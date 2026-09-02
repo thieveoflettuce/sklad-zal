@@ -1,24 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { calcTarget, demandById } from "@/lib/catalog";
 import { useStore } from "@/lib/store";
 
-export function CellPageClient({ id }: { id: string }) {
+export default function CellPageInner() {
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const id = searchParams.get("id") ?? "";
   const { cellById, setQty, demandId } = useStore();
   const cell = cellById(id);
   const demand = demandById(demandId);
   const [draft, setDraft] = useState<number | null>(null);
 
-  if (!cell || cell.qty === null) {
+  if (!id || !cell || cell.qty === null) {
     return (
       <>
-        <h1 className="h1">Ячейка пуста</h1>
-        <Link className="btn" href="/stellazh">
-          К стеллажу
+        <h1 className="h1">Ячейка не найдена</h1>
+        <Link className="btn" href="/balans">
+          К балансу
         </Link>
       </>
     );
@@ -31,8 +33,8 @@ export function CellPageClient({ id }: { id: string }) {
     <>
       <div className="page-head">
         <h1 className="h1">{cell.name}</h1>
-        <Link className="btn btn-ghost" href="/stellazh">
-          Стеллаж
+        <Link className="btn btn-ghost" href="/balans">
+          Баланс
         </Link>
       </div>
       <p className="hint">
@@ -71,7 +73,7 @@ export function CellPageClient({ id }: { id: string }) {
         type="button"
         onClick={() => {
           setQty(cell.id, qty);
-          router.push("/stellazh");
+          router.push("/balans");
         }}
       >
         Сохранить

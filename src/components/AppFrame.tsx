@@ -8,8 +8,8 @@ import { useStore } from "@/lib/store";
 
 const NAV = [
   { href: "/", label: "Зал" },
-  { href: "/stellazh", label: "Стеллаж" },
-  { href: "/inventarizaciya", label: "Счёт" },
+  { href: "/balans", label: "Баланс" },
+  { href: "/priemka", label: "Приёмка" },
   { href: "/dokazaz", label: "Заказ" },
   { href: "/otchety", label: "Отчёты" },
 ];

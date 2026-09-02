@@ -1,4 +1,17 @@
-import type { Demand, DemandId, ShelfRow, UsageEvent } from "./types";
+import type {
+  Demand,
+  DemandId,
+  ShelfRow,
+  StorageKind,
+  StorageUnit,
+  UsageEvent,
+} from "./types";
+
+export const STORAGE_KINDS: { id: StorageKind; label: string }[] = [
+  { id: "stellazh", label: "Стеллаж" },
+  { id: "shkaf", label: "Шкаф" },
+  { id: "polka", label: "Полка" },
+];
 
 export const DEMANDS: Demand[] = [
   {
@@ -45,7 +58,7 @@ export const DEMANDS: Demand[] = [
   },
 ];
 
-export const INITIAL_SHELVES: ShelfRow[] = [
+const LEGACY_SHELVES: ShelfRow[] = [
   {
     id: "top",
     label: "Полка 1 — верх",
@@ -78,6 +91,18 @@ export const INITIAL_SHELVES: ShelfRow[] = [
   },
 ];
 
+export const INITIAL_STORAGE_UNITS: StorageUnit[] = [
+  {
+    id: "unit-zal-1",
+    kind: "stellazh",
+    name: "Стеллаж зала",
+    rows: LEGACY_SHELVES,
+  },
+];
+
+/** @deprecated use INITIAL_STORAGE_UNITS */
+export const INITIAL_SHELVES = LEGACY_SHELVES;
+
 export const SEED_USAGE: UsageEvent[] = [
   { id: "u1", cellId: "1a", name: "Салфетки", delta: -3, unit: "уп", at: "2026-08-14T10:00:00" },
   { id: "u2", cellId: "2a", name: "Соусники", delta: -8, unit: "шт", at: "2026-08-14T12:00:00" },
@@ -93,14 +118,34 @@ export const SEED_USAGE: UsageEvent[] = [
   { id: "u12", cellId: "1b", name: "Трубочки", delta: -210, unit: "уп", at: "2026-01-15T10:00:00" },
 ];
 
+export function uid(prefix = "id") {
+  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+}
+
+export function kindLabel(kind: StorageKind) {
+  return STORAGE_KINDS.find((k) => k.id === kind)?.label ?? kind;
+}
+
+export function unitLabel(unit: StorageUnit) {
+  return `${kindLabel(unit.kind)} · ${unit.name}`;
+}
+
+export function allCells(units: StorageUnit[]) {
+  return units.flatMap((u) => u.rows.flatMap((r) => r.cells));
+}
+
+export function filledCellIdsFromUnits(units: StorageUnit[]) {
+  return allCells(units)
+    .filter((cell) => cell.qty !== null)
+    .map((cell) => cell.id);
+}
+
 export function demandById(id: DemandId): Demand {
   return DEMANDS.find((d) => d.id === id) ?? DEMANDS[1];
 }
 
 export function filledCellIds() {
-  return INITIAL_SHELVES.flatMap((row) => row.cells)
-    .filter((cell) => cell.qty !== null)
-    .map((cell) => cell.id);
+  return filledCellIdsFromUnits(INITIAL_STORAGE_UNITS);
 }
 
 export function calcOrder(now: number, min: number, mult: number) {
@@ -110,4 +155,34 @@ export function calcOrder(now: number, min: number, mult: number) {
 
 export function calcTarget(min: number, mult: number) {
   return Math.ceil(min * mult);
+}
+
+export type StockStatus = "ok" | "warn" | "critical";
+
+export function stockStatus(
+  now: number,
+  min: number,
+  mult: number,
+): StockStatus {
+  const target = calcTarget(min, mult);
+  if (now < target) return "critical";
+  const buffer = Math.max(1, Math.ceil(min * 0.3));
+  if (now < target + buffer) return "warn";
+  return "ok";
+}
+
+export function mapUnits(
+  units: StorageUnit[],
+  cellId: string,
+  mapCell: (cell: StorageUnit["rows"][0]["cells"][0]) => StorageUnit["rows"][0]["cells"][0],
+): StorageUnit[] {
+  return units.map((unit) => ({
+    ...unit,
+    rows: unit.rows.map((row) => ({
+      ...row,
+      cells: row.cells.map((cell) =>
+        cell.id === cellId ? mapCell(cell) : cell,
+      ),
+    })),
+  }));
 }

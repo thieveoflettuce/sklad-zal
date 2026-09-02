@@ -15,14 +15,14 @@ export default function HomePage() {
     <>
       <h1 className="h1">Зал</h1>
       <p className="lead">
-        Один стеллаж. Считаешь полки как глазами — заказ собирается сам.
+        Остатки на полках — цветом видно, что заказывать.
       </p>
       <div className="stack">
-        <Link className="btn" href="/stellazh">
-          Открыть стеллаж
+        <Link className="btn" href="/balans">
+          Открыть баланс
         </Link>
-        <Link className="btn btn-line" href="/inventarizaciya">
-          Инвентаризация
+        <Link className="btn btn-line" href="/priemka">
+          Приёмка
         </Link>
         <Link className="btn btn-line" href="/dokazaz">
           Дозаказ · {need} позиций
@@ -30,10 +30,13 @@ export default function HomePage() {
         <Link className="btn btn-line" href="/periody">
           Период: {demand.label}
         </Link>
+        <Link className="btn btn-line" href="/sklad">
+          Настройка склада
+        </Link>
         <Link className="btn btn-line" href="/otchety">
           Отчёты использования
         </Link>
-        <p className="later">Кухня и бар подключим позже. Админка — тоже.</p>
+        <p className="later">Кухня и бар подключим позже.</p>
       </div>
     </>
   );
