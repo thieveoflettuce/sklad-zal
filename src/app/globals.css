@@ -153,6 +153,42 @@ input {
   transform: translateY(1px);
 }
 
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.order-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-bottom: 8px;
+}
+
+.order-toolbar .btn-line {
+  width: auto;
+  padding: 10px 14px;
+}
+
+.order-add {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.order-suggest {
+  align-items: center;
+}
+
+.order-add-one {
+  width: auto;
+  flex-shrink: 0;
+  padding: 10px 14px;
+}
+
 .btn-ghost {
   background: transparent;
   color: var(--leaf);
